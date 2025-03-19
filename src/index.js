@@ -1,8 +1,10 @@
-async function fetchWithRetry(url, options, retries = 5, delay = 1000) {
+async function fetchWithRetry(url, options, retries = 1, delay = 1000) {
 	let attempt = 0;
 	while (attempt < retries) {
 		try {
 			const response = await fetch(url, options);
+			console.log('response', response);
+
 			if (response.status >= 200 && response.status < 300) {
 				return response;
 			}
@@ -11,6 +13,7 @@ async function fetchWithRetry(url, options, retries = 5, delay = 1000) {
 				return response;
 			}
 		} catch (error) {
+			console.log('error:', error);
 			attempt++;
 			if (attempt >= retries) {
 				throw new Error(`Failed to fetch after ${retries} attempts: ${error.message}`);
@@ -28,6 +31,7 @@ export default {
 		const url = new URL(request.url);
 		const targetURL = 'https://payment.ivacbd.com' + url.pathname + url.search;
 
+		console.log('targetURL', targetURL);
 		// Handle preflight requests for CORS
 		if (request.method === 'OPTIONS') {
 			return new Response(null, {
@@ -90,6 +94,7 @@ export default {
 				});
 			}
 		} catch (error) {
+			console.log('error', error);
 			console.error(`Error: ${error.message}`);
 			return new Response(`Error: ${error.message}`, { status: error.status || 500 });
 		}
